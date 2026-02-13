@@ -56,7 +56,10 @@ export default function Index() {
             {trendingMovie && (
               <View className="mt-8">
                 <Text className="text-lg text-white font-bold mt-5 mb-3">
-                  Trending Movies
+                  Trending{' '}
+                  <Text className="text-accent">
+                    Movies
+                  </Text>
                 </Text>
 
               </View>
@@ -74,7 +77,10 @@ export default function Index() {
                 keyExtractor={(item) => item.movie_id.toString()}
               />
               <Text className="text-lg text-white font-bold mt-5 mb-3">
-                Latest Movies
+                Latest{' '}
+                <Text className="text-accent">
+                  Movies
+                </Text>
               </Text>
               <FlatList
                 data={movies}
