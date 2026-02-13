@@ -1,21 +1,17 @@
-import { Client, TablesDB, Query, ID } from 'react-native-appwrite'
+import { Client, TablesDB, Query, ID, Account } from 'react-native-appwrite'
 // track searches for users
 
 
 const DB_ID = process.env.EXPO_PUBLIC_APPWRITE_DB_ID!;
 const TABLE_ID = process.env.EXPO_PUBLIC_APPWRITE_TABLE_ID!;
 
-console.log("DB:", DB_ID)
-console.log("TABLE:", TABLE_ID)
-console.log("ENDPOINT:", process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT)
-console.log("PROJECT:", process.env.EXPO_PUBLIC_APPWRITE_ID)
-
-
 const client = new Client()
     .setEndpoint(process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT!)
     .setProject(process.env.EXPO_PUBLIC_APPWRITE_ID!)
 
-const db = new TablesDB(client)
+export const account = new Account(client)
+
+export const db = new TablesDB(client)
 
 export const updateSearchCount = async (searchQuery: string, movie: Movie) => {
     // call appwrite api and check if a document exists

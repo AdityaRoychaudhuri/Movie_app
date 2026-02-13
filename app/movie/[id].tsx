@@ -60,12 +60,12 @@ const MovieDetails = () => {
             </Text>
           </View>
           <MovieInfo label='Overview' info={movie?.overview}/>
-          <MovieInfo label='Genres' info={movie?.genres?.map((g) => g.name).join(' - ') || 'N/A'}/>
+          <MovieInfo label='Genres' info={movie?.genres?.map((g: any) => g.name).join(' - ') || 'N/A'}/>
           <View className='flex flex-row justify-between w-64'>
             <MovieInfo label='Budget' info={`$${movie?.budget / 1000000} million`}/>
             <MovieInfo label='Revenue' info={`$${Math.round(movie?.revenue / 1_000_000)} million`}/>
           </View>
-          <MovieInfo label='Production Companies' info={movie?.production_companies?.map((c) => c.name).join(' - ') || 'N/A'}/>
+          <MovieInfo label='Production Companies' info={movie?.production_companies?.map((c: any) => c.name).join(' - ') || 'N/A'}/>
 
         </View>
       </ScrollView>
