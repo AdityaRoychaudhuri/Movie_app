@@ -1,9 +1,11 @@
 import { View, Text, ScrollView, Image, TouchableOpacity } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { router, useLocalSearchParams } from 'expo-router'
 import useFetch from '../services/useFetch';
 import { fetchMovieDetails } from '../services/api';
 import { icons } from '@/constants/icons';
+import { useAuth } from '../context/AuthContext'
+import { saveMovie, isMovieSaved } from '../services/appwrite'
 
 interface MovieInfoProp{
   label: string,
@@ -29,6 +31,44 @@ const MovieDetails = () => {
     loading
   } = useFetch(() => fetchMovieDetails(id as string));
 
+  const { user } = useAuth();
+  const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (!user || !movie?.id) return;
+
+    const check = async () => {
+      const exists = await isMovieSaved(user.$id, movie);
+      setSaved(exists!);
+    };
+
+    check();
+}, [user?.$id, movie?.id]);
+
+  
+  const handleSave = async () => {
+    if (!user) {
+        router.push("/login");
+        return;
+    }
+
+    try {
+      setSaving(true);
+    
+      const res = await saveMovie(user.$id, movie);
+
+      if (res === 'saved' || res === 'Already saved') {
+        setSaved(true);
+      }
+
+    } catch (error) {
+      console.log('Saved failed', error);
+    } finally {
+      setSaving(false);
+    }
+  }
+
   return (
     <View className='bg-primary flex-1'>
       <ScrollView contentContainerStyle={{
@@ -42,15 +82,23 @@ const MovieDetails = () => {
           resizeMode='stretch'
           />
         </View>
-        <View className='flex-col items-start justify-center mt-5 px-5'>
-          <Text className='text-white font-bold text-xl'>{movie?.title}</Text>
+        <View className=' mt-5 px-5'>
+          <View className='flex-row justify-between items-start'>
+            <Text className='text-white font-bold text-xl' numberOfLines={2}>{movie?.title}</Text>
+            <TouchableOpacity className='size-9 rounded-full bg-dark-100 justify-center items-center' onPress={handleSave} disabled={saving}>
+              <Image 
+              source={saved ? icons.saved_full : icons.save} 
+              className={saved ? 'size-10' : 'size-5'} 
+              tintColor='#fff'/>
+            </TouchableOpacity>
+          </View>
           <View className='flex-row items-center gap-x-1 mt-2'>
             <Text className='text-light-200 text-sm'>{movie?.release_date?.split('-')[0]}</Text>
             <Text className='text-light-200 text-sm'>
               {movie?.runtime}m
             </Text>
           </View>
-          <View className='flex-row items-center bg-dark-100 py-1 px-2 rounded-md gap-x-1 mt-2'>
+          <View className='flex-row items-center bg-dark-100 py-1 px-2 rounded-md gap-x-1 mt-2 w-[122px]'>
             <Image source={icons.star} className='size-4'/>
             <Text className='text-white text-sm font-bold'>
               {Math.round(movie?.vote_average??0)}/10
