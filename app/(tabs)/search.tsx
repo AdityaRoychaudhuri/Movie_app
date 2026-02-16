@@ -1,5 +1,5 @@
 import { View, Text, Image, FlatList, ActivityIndicator } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { images } from '@/constants/images'
 import useFetch from '../services/useFetch'
 import { fetchMovies } from '../services/api'
@@ -13,21 +13,19 @@ const search = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const router = useRouter();
 
+  const fetchMovieData = useCallback(() => {
+    return fetchMovies({ query: searchQuery })
+  }, [searchQuery])
+
   const { 
     data: movies, 
     loading: movieLoading, 
     error: movieError,
     refetch: loadMovies,
     reset
-  } = useFetch(() => fetchMovies({
-    query: searchQuery
-  }))
+  } = useFetch(fetchMovieData)
 
   // Load popular movies on component mount
-  useEffect(() => {
-    loadMovies();
-  }, [])
-
   useEffect(() => {
     const timeOutId = setTimeout(
       async () => {
